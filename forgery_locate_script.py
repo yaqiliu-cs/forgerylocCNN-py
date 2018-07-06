@@ -101,8 +101,8 @@ def mean_filtering(feamap,kernel_size):
 def main_func(input_image_path):
     root_path = './'
     # the model path (deploy file and caffemodel path) of model 64 * 64
-    deploy_64 = root_path + 'model_64/models_64_8_5groups_norelu_deploy.prototxt'
-    caffe_model_64 = root_path + 'model_64/models_SRM_iter_20000.caffemodel'
+    deploy_64 = root_path + 'models_64_8_5groups_norelu_deploy.prototxt'
+    caffe_model_64 = root_path + 'models_SRM_iter_20000.caffemodel'
     img_path = input_image_path
     
     # load the caffe model
