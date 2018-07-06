@@ -1,0 +1,348 @@
+name: "models_64_8_5groups_norelu"
+input:"data"
+input_dim:1
+input_dim:3
+input_dim:64
+input_dim:64
+
+layer {
+  bottom: "data"
+  top: "conv1"
+  name: "conv1"
+  type: "Convolution"
+  param {
+    #lr_mult: 1
+    #decay_mult: 1
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 30
+    kernel_size: 5
+    stride: 1
+    pad: 0
+	weight_filler {
+      type: "fullsrm"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "group1_conv"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "group1_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  } 
+  convolution_param {
+    num_output: 16
+    pad: 2
+    kernel_size: 5
+    bias_term: false
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    } 
+  } 
+  propagate_down: false
+}
+layer {
+  name: "group1_ABS"
+  bottom: "group1_conv"
+  top: "group1_ABS"
+  type: "AbsVal"
+}
+layer { 
+   name: "group1_BN" 
+   type: "BatchNorm" 
+   bottom: "group1_ABS" 
+   top: "group1_ABS" 
+   batch_norm_param { 
+	use_global_stats: true
+   }  
+} 
+layer {
+	bottom: "group1_ABS"
+	top: "group1_ABS"
+	name: "group1_scale_conv"
+	type: "Scale"
+	scale_param {
+		bias_term: true
+	}
+}
+layer {
+  name: "group1_tanH"
+  bottom: "group1_ABS"
+  top: "group1_tanH"
+  type: "TanH"
+}
+layer {
+  name: "group1_pool"
+  type: "Pooling"
+  bottom: "group1_tanH"
+  top: "group1_pool"
+  pooling_param {
+    pool: AVE
+    pad: 1
+    kernel_size: 5 # pool over a 5x5 region
+    stride: 2      # step two pixels (in the bottom blob) between pooling regions
+  }
+}
+layer {
+  name: "group2_conv"
+  type: "Convolution"
+  bottom: "group1_pool"
+  top: "group2_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 2
+    kernel_size: 5
+    bias_term: false
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+   name: "group2_BN"
+   type: "BatchNorm"
+   bottom: "group2_conv"
+   top: "group2_conv"
+   batch_norm_param {
+        use_global_stats:  true
+   }
+}
+layer {
+	bottom: "group2_conv"
+	top: "group2_conv"
+	name: "group2_scale_conv"
+	type: "Scale"
+	scale_param {
+		bias_term: true
+	}
+}
+layer {
+  name: "group2_tanH"
+  bottom: "group2_conv"
+  top: "group2_tanH"
+  type: "TanH"
+}
+layer {
+  name: "group2_pool"
+  type: "Pooling"
+  bottom: "group2_tanH"
+  top: "group2_pool"
+  pooling_param {
+    pool: AVE
+    pad: 1
+    kernel_size: 5 # pool over a 5x5 region
+    stride: 2      # step two pixels (in the bottom blob) between pooling regions
+  }
+}
+layer {
+  name: "group3_conv"
+  type: "Convolution"
+  bottom: "group2_pool"
+  top: "group3_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 1
+    bias_term: false
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+   name: "group3_BN"
+   type: "BatchNorm"
+   bottom: "group3_conv"
+   top: "group3_conv"
+   batch_norm_param {
+        use_global_stats:  true
+   }
+}
+layer {
+	bottom: "group3_conv"
+	top: "group3_conv"
+	name: "group3_scale_conv"
+	type: "Scale"
+	scale_param {
+		bias_term: true
+	}
+}
+layer {
+  name: "group3_relu"
+  bottom: "group3_conv"
+  top: "group3_conv"
+  type: "ReLU"
+}
+layer {
+  name: "group3_pool"
+  type: "Pooling"
+  bottom: "group3_conv"
+  top: "group3_pool"
+  pooling_param {
+    pool: AVE
+    pad: 1
+    kernel_size: 5 # pool over a 5x5 region
+    stride: 2      # step two pixels (in the bottom blob) between pooling regions
+  }
+}
+layer {
+  name: "group4_conv"
+  type: "Convolution"
+  bottom: "group3_pool"
+  top: "group4_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    bias_term: false
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+   name: "group4_BN"
+   type: "BatchNorm"
+   bottom: "group4_conv"
+   top: "group4_conv"
+   batch_norm_param {
+        use_global_stats:  true
+   }
+}
+layer {
+	bottom: "group4_conv"
+	top: "group4_conv"
+	name: "group4_scale_conv"
+	type: "Scale"
+	scale_param {
+		bias_term: true
+	}
+}
+layer {
+  name: "group4_relu"
+  bottom: "group4_conv"
+  top: "group4_conv"
+  type: "ReLU"
+}
+layer {
+  name: "group4_pool"
+  type: "Pooling"
+  bottom: "group4_conv"
+  top: "group4_pool"
+  pooling_param {
+    pool: AVE
+    pad: 1
+    kernel_size: 5 # pool over a 5x5 region
+    stride: 2      # step two pixels (in the bottom blob) between pooling regions
+  }
+}
+layer {
+  name: "group5_conv"
+  type: "Convolution"
+  bottom: "group4_pool"
+  top: "group5_conv"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    kernel_size: 1
+    bias_term: false
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+   name: "group5_BN"
+   type: "BatchNorm"
+   bottom: "group5_conv"
+   top: "group5_conv"
+   batch_norm_param {
+        use_global_stats:  true
+   }
+}
+layer {
+	bottom: "group5_conv"
+	top: "group5_conv"
+	name: "group5_scale_conv"
+	type: "Scale"
+	scale_param {
+		bias_term: true
+	}
+}
+layer {
+  name: "group5_relu"
+  bottom: "group5_conv"
+  top: "group5_conv"
+  type: "ReLU"
+}
+layer {
+  name: "group5_pool"
+  type: "Pooling"
+  bottom: "group5_conv"
+  top: "group5_pool"
+  pooling_param {
+    pool: AVE
+    pad: 0
+    kernel_size: 3
+    stride: 3      # step two pixels (in the bottom blob) between pooling regions
+  }
+}
+layer {
+  name: "fc1"
+  type: "InnerProduct"
+  # learning rate and decay multipliers for the weights
+  param { lr_mult: 1 decay_mult: 1 }
+  # learning rate and decay multipliers for the biases
+  param { lr_mult: 2 decay_mult: 0 }
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+  bottom: "group5_pool"
+  top: "fc1"
+}
+layer {
+  name: "prob"
+  type: "Softmax"
+  bottom: "fc1"
+  top: "prob"
+  include { phase: TEST }
+}
+
